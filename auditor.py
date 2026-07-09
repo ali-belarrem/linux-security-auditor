@@ -63,3 +63,84 @@ def check_open_ports():
             })
 
     return results
+def check_file_permissions():
+    # Check if sensitive system files have correct permissions
+    import os
+
+    sensitive_files = [
+        "/etc/passwd",
+        "/etc/shadow",
+        "/etc/sudoers"
+    ]
+
+    results = []
+    for filepath in sensitive_files:
+        try:
+            if os.path.exists(filepath):
+                permissions = oct(os.stat(filepath).st_mode)[-3:]
+                if permissions in ["644", "400", "440"]:
+                    results.append({
+                        "check": f"File {filepath}",
+                        "status": "PASS",
+                        "detail": f"Permissions are safe: {permissions}"
+                    })
+                else:
+                    results.append({
+                        "check": f"File {filepath}",
+                        "status": "FAIL",
+                        "detail": f"Unsafe permissions detected: {permissions}"
+                    })
+            else:
+                results.append({
+                    "check": f"File {filepath}",
+                    "status": "WARNING",
+                    "detail": "File not found on this system"
+                })
+
+        except Exception as e:
+            results.append({
+                "check": f"File {filepath}",
+                "status": "ERROR",
+                "detail": str(e)
+            })
+
+    return results
+    
+def check_user_accounts():
+    # Check for dangerous user account configurations
+    results = []
+
+    try:
+        result = subprocess.run(
+            ["cat", "/etc/passwd"],
+            capture_output=True,
+            text=True
+        )
+
+        users_with_shell = []
+        for line in result.stdout.splitlines():
+            parts = line.split(":")
+            if len(parts) >= 7 and parts[6] in ["/bin/bash", "/bin/sh"]:
+                users_with_shell.append(parts[0])
+
+        if len(users_with_shell) > 2:
+            results.append({
+                "check": "User Accounts",
+                "status": "WARNING",
+                "detail": f"Multiple users with shell access: {', '.join(users_with_shell)}"
+            })
+        else:
+            results.append({
+                "check": "User Accounts",
+                "status": "PASS",
+                "detail": f"Shell access users: {', '.join(users_with_shell)}"
+            })
+
+    except Exception as e:
+        results.append({
+            "check": "User Accounts",
+            "status": "WARNING",
+            "detail": "Could not read user accounts on this system"
+        })
+
+    return results
