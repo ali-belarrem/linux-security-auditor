@@ -1,3 +1,5 @@
 __pycache__/
 *.pyc
 reports/
+*.txt
+!requirements.txt

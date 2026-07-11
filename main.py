@@ -2,6 +2,7 @@
 # Main entry point of the Linux Security Auditor tool
 
 from auditor import check_firewall, check_open_ports, check_file_permissions, check_user_accounts
+from report import generate_report
 
 def main():
     print("=" * 50)
@@ -37,7 +38,12 @@ def main():
         results.append(r)
         print(f"[{r['status']}] {r['check']}: {r['detail']}")
 
-    print("\n[*] Audit phase 2 complete.")
+    # Generate report
+    save = input("\n[?] Save audit report to file? (y/n): ")
+    if save.lower() == "y":
+        generate_report(results)
+
+    print("\n[*] Audit complete. Stay secure!")
 
 if __name__ == "__main__":
     main()
