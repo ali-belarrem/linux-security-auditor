@@ -44,6 +44,7 @@ def main():
         generate_report(results)
 
     print("\n[*] Audit complete. Stay secure!")
+print("[*] Check the generated report for full details.")
 
 if __name__ == "__main__":
     main()
