@@ -42,9 +42,9 @@ def main():
     save = input("\n[?] Save audit report to file? (y/n): ")
     if save.lower() == "y":
         generate_report(results)
+        print("[*] Check the generated report for full details.")
 
     print("\n[*] Audit complete. Stay secure!")
-print("[*] Check the generated report for full details.")
 
 if __name__ == "__main__":
     main()
